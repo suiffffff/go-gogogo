@@ -9,9 +9,7 @@ import (
 func download(filename string, wg *sync.WaitGroup, results chan<- string) {
 	defer wg.Done()
 	time.Sleep(time.Second)
-	result := fmt.Sprintf("%s 下载完成", filename)
-	fmt.Println(result)
-	results <- result
+	results <- fmt.Sprintf("%s 下载完成", filename)
 }
 
 func main() {
@@ -19,14 +17,17 @@ func main() {
 	var wg sync.WaitGroup
 	results := make(chan string, 3)
 	var s = []string{"file1.zip", "file2.pdf", "file3.mp4"}
-	for _, b := range s {
+	for _, file := range s {
 		wg.Add(1)
-		go download(b, &wg, results)
+		go download(file, &wg, results)
 	}
 	go func() {
 		wg.Wait()
 		close(results)
 	}()
 	wg.Wait()
+	for res := range results {
+		fmt.Println(res)
+	}
 	fmt.Println("所有文件下载完成")
 }

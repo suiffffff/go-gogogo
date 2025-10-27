@@ -32,7 +32,7 @@ func main() {
 				c.Increment()
 			}
 		}()
-		wg.Wait()
 	}
+	wg.Wait()
 	fmt.Println("最终值：", c.value())
 }

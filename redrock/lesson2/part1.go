@@ -25,10 +25,10 @@ func (p *Produce) Restock(amount int) {
 }
 func (p *Produce) Sell(amount int) (success bool, message string) {
 	if p.Stock < amount {
-		return false, "库存不足" 
+		return false, "库存不足"
 	}
 	p.Stock -= amount
-	return true, fmt.Sprintf("售卖成功")
+	return true, "售卖成功"
 }
 
 func main() {

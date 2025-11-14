@@ -17,7 +17,7 @@ func main() {
 		} else if msg == "helloserver" {
 			c.JSON(200, gin.H{"data": "helloclient"})
 		} else {
-			c.JSON(400, gin.H{"data": "i do not konw"})
+			c.JSON(400, gin.H{"data": "i do not know"})
 		}
 
 	})

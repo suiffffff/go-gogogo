@@ -6,7 +6,7 @@ import (
 )
 
 type Counter struct {
-	mu sync.Mutex
+	mu    sync.Mutex
 	count int
 }
 
@@ -32,7 +32,7 @@ func main() {
 				c.Increment()
 			}
 		}()
-		wg.Wait()
 	}
+	wg.Wait()
 	fmt.Println("最终值：", c.value())
 }

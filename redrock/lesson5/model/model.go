@@ -2,7 +2,7 @@ package model
 
 // model里面主要是存储数据结构，对于数据的加密不在这里
 type Student struct {
-	ID       int32
+	ID       uint
 	Name     string
 	Age      int
 	Grade    string
@@ -10,23 +10,23 @@ type Student struct {
 	Role     string
 }
 type Course struct {
-	ID   int32
+	ID   uint
 	Name string
 }
 type Teacher struct {
-	ID   int32
+	ID   uint
 	Name string
 }
 type Redrockclass struct {
-	StudentID    int32 `gorm:"primaryKey"`
-	XiaotuantiID int32 `gorm:"primaryKey"`
+	StudentID    uint `gorm:"primaryKey"`
+	XiaotuantiID uint `gorm:"primaryKey"`
 }
 type Xiaotuanti struct {
-	ID        int32 `gorm:"primaryKey"`
-	CourseID  int32
-	TeacherID int32
-	Capacity  int32
-	Current   int32
+	ID        uint `gorm:"primaryKey"`
+	CourseID  uint
+	TeacherID uint
+	Capacity  int
+	Current   int
 }
 
 func (Xiaotuanti) TableName() string {
@@ -47,7 +47,7 @@ type UserToken struct {
 
 // 这里又到json环节了，不会，先用着吧
 type ClassInfo struct {
-	ClassID     int    `json:"class_id"`     // 小团体ID (选课用的ID)
+	ClassID     uint   `json:"class_id"`     // 小团体ID (选课用的ID)
 	CourseName  string `json:"course_name"`  // 课程名
 	TeacherName string `json:"teacher_name"` // 老师名
 	Capacity    int    `json:"capacity"`     // 总容量
@@ -55,7 +55,7 @@ type ClassInfo struct {
 	Left        int    `json:"left"`         // 剩余名额
 }
 type MyClassInfo struct {
-	ClassID     int    `json:"class_id"`
+	ClassID     uint   `json:"class_id"`
 	CourseName  string `json:"course_name"`
 	TeacherName string `json:"teacher_name"`
 }

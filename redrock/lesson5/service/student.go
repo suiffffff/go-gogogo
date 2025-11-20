@@ -25,12 +25,12 @@ func Login(name string, rawPassword string) (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
-	accessToken, refreshToken, err := utils.GenerateTokens(uint64(student.ID), student.Role)
+	accessToken, refreshToken, err := utils.GenerateTokens(student.ID, student.Role)
 	if err != nil {
 		return "", "", err
 	}
 	exp := time.Now().Add(7 * 24 * time.Hour).Unix()
-	if err := dao.StoreRefreshToken(uint(student.ID), refreshToken, exp); err != nil {
+	if err := dao.StoreRefreshToken(student.ID, refreshToken, exp); err != nil {
 		return "", "", err
 	}
 	return accessToken, refreshToken, err
@@ -46,16 +46,19 @@ func GetCourseList() ([]model.ClassInfo, error) {
 	}
 	return classes, nil
 }
-func GetMyCourseList(studentID uint64) ([]model.MyClassInfo, error) {
+func GetMyCourseList(studentID uint) ([]model.MyClassInfo, error) {
 	classes, err := dao.GetMyCourse(studentID)
 	if err != nil {
 		return nil, err
 	}
 	return classes, nil
 }
-func Xuanke(studentID int, xiaotuantiID int) error {
-	return dao.EnrollStudent(int32(studentID), int32(xiaotuantiID))
+func CheckRefreshToken(tokenString string) (bool, error) {
+	return dao.CheckRefreshToken(tokenString)
 }
-func DropCourse(studentID int, classID int) error {
+func Xuanke(studentID uint, xiaotuantiID uint) error {
+	return dao.EnrollStudent(studentID, xiaotuantiID)
+}
+func DropCourse(studentID uint, classID uint) error {
 	return dao.DropCourse(studentID, classID)
 }

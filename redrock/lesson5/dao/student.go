@@ -12,7 +12,7 @@ import (
 func CreateStudent(student *model.Student) error {
 	return DB.Create(student).Error
 }
-func EnrollStudent(studentID int32, xiaotuantiID int32) error {
+func EnrollStudent(studentID uint, xiaotuantiID uint) error {
 	return DB.Transaction(func(tx *gorm.DB) error {
 		var xiaotuanti model.Xiaotuanti
 		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).First(&xiaotuanti, xiaotuantiID).Error; err != nil {
@@ -49,7 +49,7 @@ func GetClassList() ([]model.ClassInfo, error) {
 		Scan(&classes).Error
 	return classes, err
 }
-func GetMyCourse(studentID uint64) ([]model.MyClassInfo, error) {
+func GetMyCourse(studentID uint) ([]model.MyClassInfo, error) {
 	var myClasses []model.MyClassInfo
 	//主表应该是要找到关键的对应消息，就像之前查询课程，对于课程什么最关键呢？课的ID，老师，还有课程名，这些在哪里被关联了呢？是小团体这个表，我们要顺着这个表往下去找，而不是从下往上去找
 	//所以主表都应该是一个关联表，顺关联表往下去找其他表
@@ -62,7 +62,7 @@ func GetMyCourse(studentID uint64) ([]model.MyClassInfo, error) {
 		Scan(&myClasses).Error
 	return myClasses, err
 }
-func DropCourse(studentID int, classID int) error {
+func DropCourse(studentID uint, classID uint) error {
 	return DB.Transaction(func(tx *gorm.DB) error {
 		result := tx.Where("student_id = ? AND xiaotuanti_id = ?", studentID, classID).Delete(&model.Redrockclass{})
 		if result.Error != nil {

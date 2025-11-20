@@ -2,7 +2,6 @@ package api
 
 //api则是解析http的参数，然后把读取到的数据传入给service
 import (
-	"lesson5/dao"
 	"lesson5/service"
 	"lesson5/utils"
 	"strconv"
@@ -24,6 +23,7 @@ func CreateStudentHandler(c *gin.Context) {
 	}
 	if password == "" {
 		c.JSON(400, gin.H{"err": "你（密）吗呢？"})
+		return
 	}
 	age, err := strconv.Atoi(agestr)
 	if err != nil {
@@ -47,6 +47,7 @@ func LoginHandler(c *gin.Context) {
 		c.JSON(400, gin.H{
 			"err": "名字和密码，总有一个神隐",
 		})
+		return
 	}
 	at, rt, err := service.Login(name, password)
 	//这里说是数据库异常。token生成失败，数据异常。AI说模糊信息，但这些黑客能修改吗？
@@ -54,6 +55,7 @@ func LoginHandler(c *gin.Context) {
 		c.JSON(400, gin.H{
 			"err": "你码错咯",
 		})
+		return
 	}
 	c.JSON(200, gin.H{
 		"msg":           "登陆成功",
@@ -72,7 +74,7 @@ func RefreshTokenHandler(c *gin.Context) {
 		c.JSON(401, gin.H{"err": "你码不对或过期咯"})
 		return
 	}
-	isValid, _ := dao.CheckRefreshToken(refreshTokenStr)
+	isValid, _ := service.CheckRefreshToken(refreshTokenStr)
 	if !isValid {
 		c.JSON(401, gin.H{"err": "你被ban咯"})
 		return
@@ -101,40 +103,21 @@ func GetCourseListHandler(c *gin.Context) {
 		"data": list,
 	})
 }
-func GetMyCourseListHandler(c *gin.Context) {
+func XuankeHandler(c *gin.Context) {
 	id, exists := c.Get("userID")
 	if !exists {
-		c.JSON(500, gin.H{
-			"err": "用户在哪里",
-		})
-	}
-	//这里不知道为什么uint64（）不行
-	ID := id.(uint64)
-	list, err := service.GetMyCourseList(ID)
-	if err != nil {
-		c.JSON(500, gin.H{
-			"err": "你觉得你报上了吗",
-		})
-	}
-	c.JSON(200, gin.H{
-		"msg":  "你知道的，李海军一直是cy最好的老师，我推荐去报它的课程，我和它的化学反应好的不可思议",
-		"data": list,
-	})
-}
-func XuankeHandler(c *gin.Context) {
-	studentIDStr := c.PostForm("studentid")
-	xiaotuantiIDStr := c.PostForm("xiaotuantiid")
-	studentID, err1 := strconv.Atoi(studentIDStr)
-	xiaotuantiID, err2 := strconv.Atoi(xiaotuantiIDStr)
-	if err1 != nil {
-		c.JSON(400, gin.H{"err": "你是啥学生(ID错误)"})
+		c.JSON(400, gin.H{"err": "未登录"})
 		return
 	}
-	if err2 != nil {
+	StudentID := id.(uint)
+	xiaotuantiIDStr := c.PostForm("xiaotuantiid")
+	xiaotuantiID, err := strconv.Atoi(xiaotuantiIDStr)
+	if err != nil {
 		c.JSON(400, gin.H{"err": "你想选啥课(ID错误)"})
 		return
 	}
-	err := service.Xuanke(studentID, xiaotuantiID)
+	XiaotuantiID := uint(xiaotuantiID)
+	err = service.Xuanke(StudentID, XiaotuantiID)
 	if err != nil {
 		c.JSON(400, gin.H{
 			"(选课）启动": "失败",
@@ -147,21 +130,42 @@ func XuankeHandler(c *gin.Context) {
 		})
 	}
 }
+func GetMyCourseListHandler(c *gin.Context) {
+	id, exists := c.Get("userID")
+	if !exists {
+		c.JSON(500, gin.H{
+			"err": "用户在哪里",
+		})
+		return
+	}
+	//这里不知道为什么uint（）不行
+	ID := id.(uint)
+	list, err := service.GetMyCourseList(ID)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"err": "你觉得你报上了吗",
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"msg":  "你知道的，李海军一直是cy最好的老师，我推荐去报它的课程，我和它的化学反应好的不可思议",
+		"data": list,
+	})
+}
 func DropCourseHandler(c *gin.Context) {
 	id, _ := c.Get("userID")
-	ID := id.(int)
+	ID := id.(uint)
 	classIDStr := c.PostForm("class_id")
 	if classIDStr == "" {
 		c.JSON(400, gin.H{"err": "请告诉我要退哪门课"})
 		return
 	}
 	classID, _ := strconv.Atoi(classIDStr)
-
-	// 3. 调用 Service
-	if err := service.DropCourse(ID, classID); err != nil {
+	ClassID := uint(classID)
+	if err := service.DropCourse(ID, ClassID); err != nil {
 		c.JSON(400, gin.H{"err": "退课失败: " + err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{"msg": "退课成功，江湖路远，有缘再见"})
+	c.JSON(200, gin.H{"msg": "我来到不是时候？"})
 }

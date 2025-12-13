@@ -1,0 +1,53 @@
+{{ template "header" . }}
+
+<article>
+    <header style="margin-bottom: 2rem;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">{{ .post.Title }}</h1>
+        <p style="color: #888;">
+            发布于: <time>{{ .post.CreatedAt.Format "2006-01-02 15:04" }}</time>
+        </p>
+    </header>
+
+    <hr>
+
+    <div id="markdown-raw" style="display:none;">{{ .post.Content }}</div>
+
+    <div id="markdown-view" style="line-height: 1.8;"></div>
+    <hr>
+    <h3>评论区</h3>
+
+    {{ range .post.Comments }}
+    <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
+        <strong>{{ .User.Username }}</strong> 说：
+        <p>{{ .Content }}</p>
+        <a href="/comment/delete/{{.ID}}" style="color: red; font-size: 0.8em;">[删除]</a>
+    </div>
+    {{ else }}
+    <p>暂无评论，快来抢沙发！</p>
+    {{ end }}
+
+    <form action="/comment" method="POST" style="margin-top: 20px;">
+        <input type="hidden" name="post_id" value="{{ .post.ID }}">
+        <textarea name="content" placeholder="写下你的评论..." required></textarea>
+        <button type="submit">发表评论</button>
+    </form>
+</article>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+    // 配置 marked.js 支持换行和高亮
+    marked.setOptions({
+        breaks: true,
+        highlight: function(code, lang) {
+            const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+            return hljs.highlight(code, { language }).value;
+        }
+    });
+
+    // 获取源码并转换
+    const rawMarkdown = document.getElementById('markdown-raw').innerText;
+    document.getElementById('markdown-view').innerHTML = marked.parse(rawMarkdown);
+</script>
+
+{{ template "footer" . }}

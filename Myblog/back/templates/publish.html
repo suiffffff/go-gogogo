@@ -1,0 +1,54 @@
+{{ template "header" . }}
+
+<style>
+    /* 强制让表单容器占满宽度，不要居中挤在一起 */
+    section {
+        display: block !important; /* 覆盖 MVP.css 的 flex 布局 */
+        width: 100%;
+        max-width: 100%;
+        border: none; /* 去掉 MVP.css 默认的边框和阴影，让它看起来更像普通页面 */
+        box-shadow: none;
+        padding: 0;
+    }
+
+    /* 让输入框变得宽敞好看 */
+    form {
+        margin-top: 20px;
+    }
+
+    input[type="text"], textarea {
+        width: 100%;           /* 宽度占满 */
+        box-sizing: border-box; /* 让内边距不撑破宽度 */
+        margin-bottom: 20px;    /* 增加间距 */
+        padding: 10px;          /* 增加内填充，打字舒服点 */
+        font-family: inherit;   /* 字体继承 */
+    }
+
+    /* 调整一下标题的样式 */
+    h2 {
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+    }
+</style>
+
+<section>
+    <h2>✍️ 发布新文章</h2>
+
+    <form action="/post" method="POST">
+        <label for="title"><strong>文章标题</strong></label>
+        <input type="text" name="title" id="title" placeholder="给你的文章起个响亮的名字..." required>
+
+        <label for="summary"><strong>简短摘要</strong></label>
+        <input type="text" name="summary" id="summary" placeholder="一句话介绍这篇文章讲什么..." required>
+
+        <label for="content"><strong>文章内容 (支持 Markdown)</strong></label>
+        <textarea name="content" id="content" rows="15" placeholder="# 在这里开始写作...&#10;&#10;- 支持列表&#10;- **支持加粗**" required></textarea>
+
+        <button type="submit" style="width: 100%; background-color: #007bff; color: white; border: none; padding: 15px; font-size: 1.1rem; cursor: pointer;">
+            🚀 立即发布
+        </button>
+    </form>
+</section>
+
+{{ template "footer" . }}
